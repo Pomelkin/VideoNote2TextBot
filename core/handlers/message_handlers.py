@@ -47,7 +47,8 @@ async def check_video(message: VideoNote, bot: Bot):
         except IndexError:
             os.remove(path_mp4)
             os.remove(path_mp3)
-            text = "Не удалось распознать текст из видео"
+            is_en = False
+            text = "Не удалось распознать текст из видеосообщения."
 
     if not is_en:
         await message.reply(f'{text}', reply_markup=get_keyboard())
