@@ -7,5 +7,6 @@ texts = Table(
     metadata,
     Column('id', Integer, primary_key=True),
     Column("user_id", Integer),
+    Column("user_name", Text),
     Column("text_from_video", Text)
 )

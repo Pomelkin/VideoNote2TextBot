@@ -41,6 +41,7 @@ async def check_video(message: VideoNote, bot: Bot):
             async with async_session_maker() as session:
                 await session.scalars(insert(texts).values(
                     user_id=message.from_user.id,
+                    user_name=message.from_user.full_name,
                     text_from_video=text
                 ))
                 await session.commit()
