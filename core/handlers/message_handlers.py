@@ -28,18 +28,31 @@ async def check_video(message: VideoNote, bot: Bot):
         await bot.download(message.video_note, path_mp4)
         await MP4ToMP3(path_mp4, path_mp3)
 
-        result = model.transcribe(path_mp3)
+        result, info = model.transcribe(path_mp3, vad_filter=True)
+        is_en = False
+        try:
+            if info.language == 'en':
+                is_en = True
 
-        os.remove(path_mp4)
-        os.remove(path_mp3)
-        async with async_session_maker() as session:
-            await session.scalars(insert(texts).values(
-                        user_id=message.from_user.id,
-                        text_from_video=result["text"]
-                    ))
-            await session.commit()
+            result = list(result)[0]
+            text = result[4]
+            os.remove(path_mp4)
+            os.remove(path_mp3)
+            async with async_session_maker() as session:
+                await session.scalars(insert(texts).values(
+                    user_id=message.from_user.id,
+                    text_from_video=text
+                ))
+                await session.commit()
+        except IndexError:
+            os.remove(path_mp4)
+            os.remove(path_mp3)
+            text = "Не удалось распознать текст из видео"
 
-    await message.reply(f'{result["text"] if len(result["text"]) != 0 else "Не удалось распознать текст из видео"}', reply_markup=get_keyboard())
+    if not is_en:
+        await message.reply(f'{text}', reply_markup=get_keyboard())
+    else:
+        await message.reply(f'{text}')
 
 
 @dp.callback_query(F.data == 'translate')
