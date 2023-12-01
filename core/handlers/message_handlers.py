@@ -3,7 +3,7 @@ from aiogram.types import Message, VideoNote, CallbackQuery
 from core.loader import dp
 from core.help_functions import MP4ToMP3, get_keyboard, update_text
 from core.loader import model
-from core.database import get_async_session
+from core.database import async_session_maker
 import random
 import string
 
@@ -32,19 +32,14 @@ async def check_video(message: VideoNote, bot: Bot):
 
         os.remove(path_mp4)
         os.remove(path_mp3)
-        try:
-            async with get_async_session() as session:
-                await session.execute(
-                    insert(texts).values(
+        async with async_session_maker() as session:
+            await session.scalars(insert(texts).values(
                         user_id=message.from_user.id,
                         text_from_video=result["text"]
-                    )
-                )
-                await session.commit()
-        except Exception as e:
-            print(e)
+                    ))
+            await session.commit()
 
-    await message.reply(f'{result["text"]}', reply_markup=get_keyboard())
+    await message.reply(f'{result["text"] if len(result["text"]) != 0 else "Не удалось распознать текст из видео"}', reply_markup=get_keyboard())
 
 
 @dp.callback_query(F.data == 'translate')
