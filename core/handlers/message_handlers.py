@@ -1,7 +1,7 @@
 from aiogram import F, Bot
 from aiogram.types import Message, VideoNote, CallbackQuery
 from core.loader import dp
-from core.help_functions import MP4ToMP3, get_keyboard, update_text
+from core.utils import MP4ToMP3, get_keyboard, update_text
 from core.loader import model
 from core.database import async_session_maker
 import random
