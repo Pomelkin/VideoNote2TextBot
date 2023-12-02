@@ -5,6 +5,7 @@ VideoNote2TextBot is a Telegram bot developed using aiogram 3, asyncpg, and util
 ## Key Features:
 
 ### **Transcription of Video Messages**:
+
 The bot accepts video messages from users and uses fast-whisper largev3 int8 to transcribe speech into text.
 The transcription result is provided to the user in a convenient text format.
 ## Technologies Used:
